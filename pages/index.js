@@ -14,6 +14,25 @@ export default function Home() {
     fetchNotices();
   }, []);
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this notice?"
+    );
+
+    if (!confirmDelete) return;
+
+    const res = await fetch(`/api/notices/${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      alert("Notice deleted successfully");
+      fetchNotices();
+    } else {
+      alert("Failed to delete notice");
+    }
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>Notice Board</h1>
@@ -63,11 +82,23 @@ export default function Home() {
               />
             )}
 
-            <br />
+            <div style={{ marginTop: "10px" }}>
+              <Link href={`/edit/${notice.id}`}>
+                <button style={{ marginRight: "10px" }}>
+                  Edit
+                </button>
+              </Link>
 
-            <Link href={`/edit/${notice.id}`}>
-              <button>Edit</button>
-            </Link>
+              <button
+                onClick={() => handleDelete(notice.id)}
+                style={{
+                  backgroundColor: "red",
+                  color: "white",
+                }}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))
       )}
