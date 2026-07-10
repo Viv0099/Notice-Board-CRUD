@@ -12,12 +12,17 @@ export default async function handler(req, res) {
       });
 
       if (!notice) {
-        return res.status(404).json({ message: "Notice not found" });
+        return res.status(404).json({
+          message: "Notice not found",
+        });
       }
 
       return res.status(200).json(notice);
     } catch (error) {
-      return res.status(500).json({ error: "Failed to fetch notice" });
+      console.error(error);
+      return res.status(500).json({
+        message: "Failed to fetch notice",
+      });
     }
   }
 
@@ -49,9 +54,13 @@ export default async function handler(req, res) {
       return res.status(200).json(notice);
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ error: "Unable to update notice" });
+      return res.status(500).json({
+        message: "Failed to update notice",
+      });
     }
   }
 
-  return res.status(405).json({ message: "Method Not Allowed" });
+  return res.status(405).json({
+    message: "Method Not Allowed",
+  });
 }

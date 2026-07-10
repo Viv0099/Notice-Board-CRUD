@@ -16,10 +16,8 @@ export default function Home() {
 
   return (
     <div style={{ padding: "20px" }}>
-
       <h1>Notice Board</h1>
 
-      {/* Add this button here */}
       <Link href="/add">
         <button style={{ marginBottom: "20px" }}>
           Add Notice
@@ -34,21 +32,45 @@ export default function Home() {
             key={notice.id}
             style={{
               border: "1px solid #ccc",
-              margin: "10px 0",
-              padding: "10px",
+              borderRadius: "8px",
+              padding: "15px",
+              marginBottom: "15px",
             }}
           >
-            <h3>{notice.title}</h3>
+            <h2>{notice.title}</h2>
+
             <p>{notice.body}</p>
-            <p>Category: {notice.category}</p>
+
+            <p>
+              <strong>Category:</strong> {notice.category}
+            </p>
+
+            <p>
+              <strong>Priority:</strong> {notice.priority}
+            </p>
+
+            <p>
+              <strong>Publish Date:</strong>{" "}
+              {new Date(notice.publishDate).toLocaleDateString()}
+            </p>
+
+            {notice.image && (
+              <img
+                src={notice.image}
+                alt={notice.title}
+                width="250"
+                style={{ marginBottom: "10px" }}
+              />
+            )}
+
+            <br />
 
             <Link href={`/edit/${notice.id}`}>
-            <button>Edit</button>
+              <button>Edit</button>
             </Link>
           </div>
         ))
       )}
-
     </div>
   );
 }
