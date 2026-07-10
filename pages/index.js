@@ -15,45 +15,62 @@ export default function Home() {
   }, []);
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this notice?"
-    );
-
-    if (!confirmDelete) return;
+    if (!confirm("Delete this notice?")) return;
 
     const res = await fetch(`/api/notices/${id}`, {
       method: "DELETE",
     });
 
     if (res.ok) {
-      alert("Notice deleted successfully");
       fetchNotices();
     } else {
-      alert("Failed to delete notice");
+      alert("Delete failed");
     }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Notice Board</h1>
+    <div
+      style={{
+        maxWidth: "1000px",
+        margin: "30px auto",
+        padding: "20px",
+        fontFamily: "Arial",
+      }}
+    >
+      <h1
+        style={{
+          textAlign: "center",
+          marginBottom: "25px",
+        }}
+      >
+        📢 Notice Board
+      </h1>
 
-      <Link href="/add">
-        <button style={{ marginBottom: "20px" }}>
-          Add Notice
-        </button>
-      </Link>
+      <div style={{ textAlign: "center", marginBottom: "25px" }}>
+        <Link href="/add">
+          <button
+            style={{
+              padding: "10px 20px",
+              cursor: "pointer",
+            }}
+          >
+            + Add Notice
+          </button>
+        </Link>
+      </div>
 
       {notices.length === 0 ? (
-        <p>No notices found</p>
+        <p style={{ textAlign: "center" }}>No notices found.</p>
       ) : (
         notices.map((notice) => (
           <div
             key={notice.id}
             style={{
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              padding: "15px",
-              marginBottom: "15px",
+              border: "1px solid #ddd",
+              borderRadius: "10px",
+              padding: "20px",
+              marginBottom: "20px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
             }}
           >
             <h2>{notice.title}</h2>
@@ -77,12 +94,16 @@ export default function Home() {
               <img
                 src={notice.image}
                 alt={notice.title}
-                width="250"
-                style={{ marginBottom: "10px" }}
+                style={{
+                  width: "220px",
+                  borderRadius: "8px",
+                  marginTop: "10px",
+                  marginBottom: "15px",
+                }}
               />
             )}
 
-            <div style={{ marginTop: "10px" }}>
+            <div>
               <Link href={`/edit/${notice.id}`}>
                 <button style={{ marginRight: "10px" }}>
                   Edit
@@ -91,10 +112,6 @@ export default function Home() {
 
               <button
                 onClick={() => handleDelete(notice.id)}
-                style={{
-                  backgroundColor: "red",
-                  color: "white",
-                }}
               >
                 Delete
               </button>
