@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const [notices, setNotices] = useState([]);
@@ -14,15 +15,24 @@ export default function Home() {
     fetchNotices();
   }, []);
 
-  const deleteNotice = async (id) => {
-    if (!confirm("Delete this notice?")) return;
+const deleteNotice = async (id) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this notice?"
+  );
 
-    await fetch(`/api/notices/${id}`, {
-      method: "DELETE",
-    });
+  if (!confirmDelete) return;
 
+  const res = await fetch(`/api/notices/${id}`, {
+    method: "DELETE",
+  });
+
+  if (res.ok) {
+    toast.success("Notice deleted successfully!");
     fetchNotices();
-  };
+  } else {
+    toast.error("Failed to delete notice.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-100">
