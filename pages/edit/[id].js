@@ -17,18 +17,21 @@ export default function EditNotice() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`/api/notices/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setForm({
-          title: data.title,
-          body: data.body,
-          category: data.category,
-          priority: data.priority,
-          publishDate: data.publishDate.slice(0, 10),
-          image: data.image || "",
-        });
+    const fetchNotice = async () => {
+      const res = await fetch(`/api/notices/${id}`);
+      const data = await res.json();
+
+      setForm({
+        title: data.title,
+        body: data.body,
+        category: data.category,
+        priority: data.priority,
+        publishDate: data.publishDate.slice(0, 10),
+        image: data.image || "",
       });
+    };
+
+    fetchNotice();
   }, [id]);
 
   const handleChange = (e) => {
@@ -50,82 +53,122 @@ export default function EditNotice() {
     });
 
     alert("Notice updated successfully!");
-
     router.push("/");
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Edit Notice</h1>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10">
+      <div className="w-full max-w-2xl bg-white shadow-lg rounded-xl p-8">
 
-      <form onSubmit={handleSubmit}>
-        <input
-          name="title"
-          placeholder="Title"
-          value={form.title}
-          onChange={handleChange}
-        />
+        <h1 className="text-3xl font-bold text-center text-blue-600 mb-8">
+          Edit Notice
+        </h1>
 
-        <br />
-        <br />
+        <form onSubmit={handleSubmit} className="space-y-5">
 
-        <textarea
-          name="body"
-          placeholder="Body"
-          value={form.body}
-          onChange={handleChange}
-        />
+          <div>
+            <label className="block mb-2 font-medium">Title</label>
+            <input
+              type="text"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
 
-        <br />
-        <br />
+          <div>
+            <label className="block mb-2 font-medium">Body</label>
+            <textarea
+              name="body"
+              rows="4"
+              value={form.body}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
 
-        <select
-          name="category"
-          value={form.category}
-          onChange={handleChange}
-        >
-          <option value="General">General</option>
-          <option value="Exam">Exam</option>
-          <option value="Event">Event</option>
-        </select>
+          <div className="grid grid-cols-2 gap-4">
 
-        <br />
-        <br />
+            <div>
+              <label className="block mb-2 font-medium">Category</label>
 
-        <select
-          name="priority"
-          value={form.priority}
-          onChange={handleChange}
-        >
-          <option value="Normal">Normal</option>
-          <option value="Urgent">Urgent</option>
-        </select>
+              <select
+                name="category"
+                value={form.category}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-2"
+              >
+                <option value="General">General</option>
+                <option value="Exam">Exam</option>
+                <option value="Event">Event</option>
+              </select>
+            </div>
 
-        <br />
-        <br />
+            <div>
+              <label className="block mb-2 font-medium">Priority</label>
 
-        <input
-          type="date"
-          name="publishDate"
-          value={form.publishDate}
-          onChange={handleChange}
-        />
+              <select
+                name="priority"
+                value={form.priority}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-2"
+              >
+                <option value="Normal">Normal</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
 
-        <br />
-        <br />
+          </div>
 
-        <input
-          name="image"
-          placeholder="Image URL"
-          value={form.image}
-          onChange={handleChange}
-        />
+          <div>
+            <label className="block mb-2 font-medium">Publish Date</label>
 
-        <br />
-        <br />
+            <input
+              type="date"
+              name="publishDate"
+              value={form.publishDate}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2"
+            />
+          </div>
 
-        <button type="submit">Update Notice</button>
-      </form>
+          <div>
+            <label className="block mb-2 font-medium">Image URL</label>
+
+            <input
+              type="text"
+              name="image"
+              value={form.image}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2"
+            />
+          </div>
+
+          <div className="flex gap-4">
+
+            <button
+              type="submit"
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold"
+            >
+              Update Notice
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push("/")}
+              className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold"
+            >
+              Cancel
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
     </div>
   );
 }
