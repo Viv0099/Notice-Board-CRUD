@@ -2,27 +2,38 @@ import { prisma } from "../../../lib/prisma";
 
 export default async function handler(req, res) {
 
-  // GET - Fetch all notices
+
+  // GET all notices
   if (req.method === "GET") {
     try {
+
       const notices = await prisma.notice.findMany({
         orderBy: {
           createdAt: "desc",
         },
       });
 
+
       return res.status(200).json(notices);
+
+
     } catch (error) {
-      console.error(error);
+
+      console.error("GET ERROR:", error);
+
       return res.status(500).json({
-        message: "Failed to fetch notices",
+        message: error.message,
       });
+
     }
   }
 
-  // POST - Create a new notice
+
+
+  // CREATE notice
   if (req.method === "POST") {
     try {
+
       const {
         title,
         body,
@@ -32,34 +43,48 @@ export default async function handler(req, res) {
         image,
       } = req.body;
 
-      if (!title || !body) {
-        return res.status(400).json({
-          message: "Title and body are required",
-        });
-      }
+
 
       const notice = await prisma.notice.create({
+
         data: {
+
           title,
           body,
           category,
           priority,
-          publishDate: new Date(publishDate),
+
+          publishDate: publishDate
+            ? new Date(publishDate)
+            : new Date(),
+
           image,
+
         },
+
       });
+
+
 
       return res.status(201).json(notice);
 
+
+
     } catch (error) {
-      console.error(error);
+
+      console.error("POST ERROR:", error);
+
       return res.status(500).json({
-        message: "Failed to create notice",
+        message: error.message,
       });
+
     }
   }
 
+
+
   return res.status(405).json({
-    message: "Method not allowed",
+    message: "Method Not Allowed",
   });
+
 }
