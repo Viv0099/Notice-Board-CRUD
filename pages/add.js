@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
 export default function AddNotice() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function AddNotice() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch("/api/notices", {
+    const res = await fetch("/api/notices", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,12 +32,18 @@ export default function AddNotice() {
       body: JSON.stringify(form),
     });
 
-    alert("Notice added successfully!");
-
-    router.push("/");
+    if (res.ok) {
+      toast.success("Notice added successfully!");
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
+    } else {
+      toast.error("Failed to add notice.");
+    }
   };
 
   return (
+
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10">
       <div className="w-full max-w-2xl bg-white shadow-lg rounded-xl p-8">
 
