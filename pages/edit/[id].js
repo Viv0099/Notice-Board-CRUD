@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function EditNotice() {
   const router = useRouter();
@@ -44,16 +45,23 @@ export default function EditNotice() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch(`/api/notices/${id}`, {
+    const res = await fetch(`/api/notices/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(form),
     });
+    if (res.ok) {
+      toast.success("Notice updated successfully!");
+      
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
+    } else {
+      toast.error("Failed to update notice.");
+    }  
 
-    alert("Notice updated successfully!");
-    router.push("/");
   };
 
   return (
