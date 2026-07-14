@@ -23,7 +23,7 @@ export default function AddNotice() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("/api/notices", {
+    await fetch("/api/notices", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,83 +31,126 @@ export default function AddNotice() {
       body: JSON.stringify(form),
     });
 
-    if (res.ok) {
-      alert("Notice Added Successfully");
-      router.push("/");
-    } else {
-      alert("Failed to add notice");
-    }
+    alert("Notice added successfully!");
+
+    router.push("/");
   };
 
   return (
-    <div style={{ padding: "30px", maxWidth: "600px", margin: "auto" }}>
-      <h1>Add Notice</h1>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10">
+      <div className="w-full max-w-2xl bg-white shadow-lg rounded-xl p-8">
 
-      <form onSubmit={handleSubmit}>
+        <h1 className="text-3xl font-bold text-center text-blue-600 mb-8">
+          Add New Notice
+        </h1>
 
-        <input
-          type="text"
-          name="title"
-          placeholder="Title"
-          value={form.title}
-          onChange={handleChange}
-          required
-          style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
-        />
+        <form onSubmit={handleSubmit} className="space-y-5">
 
-        <textarea
-          name="body"
-          placeholder="Body"
-          value={form.body}
-          onChange={handleChange}
-          required
-          style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
-        />
+          <div>
+            <label className="block mb-2 font-medium">
+              Title
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
 
-        <select
-          name="category"
-          value={form.category}
-          onChange={handleChange}
-          style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
-        >
-          <option>General</option>
-          <option>Exam</option>
-          <option>Event</option>
-        </select>
+          <div>
+            <label className="block mb-2 font-medium">
+              Body
+            </label>
+            <textarea
+              name="body"
+              rows="4"
+              value={form.body}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
 
-        <select
-          name="priority"
-          value={form.priority}
-          onChange={handleChange}
-          style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
-        >
-          <option>Normal</option>
-          <option>Urgent</option>
-        </select>
+          <div className="grid grid-cols-2 gap-4">
 
-        <input
-          type="date"
-          name="publishDate"
-          value={form.publishDate}
-          onChange={handleChange}
-          required
-          style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
-        />
+            <div>
+              <label className="block mb-2 font-medium">
+                Category
+              </label>
 
-        <input
-          type="text"
-          name="image"
-          placeholder="Image URL (optional)"
-          value={form.image}
-          onChange={handleChange}
-          style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
-        />
+              <select
+                name="category"
+                value={form.category}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-2"
+              >
+                <option value="General">General</option>
+                <option value="Exam">Exam</option>
+                <option value="Event">Event</option>
+              </select>
+            </div>
 
-        <button type="submit">
-          Save Notice
-        </button>
+            <div>
+              <label className="block mb-2 font-medium">
+                Priority
+              </label>
 
-      </form>
+              <select
+                name="priority"
+                value={form.priority}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-2"
+              >
+                <option value="Normal">Normal</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div>
+            <label className="block mb-2 font-medium">
+              Publish Date
+            </label>
+
+            <input
+              type="date"
+              name="publishDate"
+              value={form.publishDate}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 font-medium">
+              Image URL
+            </label>
+
+            <input
+              type="text"
+              name="image"
+              value={form.image}
+              onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
+              className="w-full border rounded-lg px-4 py-2"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+          >
+            Add Notice
+          </button>
+
+        </form>
+
+      </div>
     </div>
   );
 }
