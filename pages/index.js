@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 export default function Home() {
   const [notices, setNotices] = useState([]);
+  const [search, setSearch] = useState("");
 
   const fetchNotices = async () => {
     const res = await fetch("/api/notices");
@@ -15,29 +16,30 @@ export default function Home() {
     fetchNotices();
   }, []);
 
-const deleteNotice = async (id) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this notice?"
-  );
+  const deleteNotice = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this notice?"
+    );
 
-  if (!confirmDelete) return;
+    if (!confirmDelete) return;
 
-  const res = await fetch(`/api/notices/${id}`, {
-    method: "DELETE",
-  });
+    const res = await fetch(`/api/notices/${id}`, {
+      method: "DELETE",
+    });
 
-  if (res.ok) {
-    toast.success("Notice deleted successfully!");
-    fetchNotices();
-  } else {
-    toast.error("Failed to delete notice.");
-  }
-};
+    if (res.ok) {
+      toast.success("Notice deleted successfully!");
+      fetchNotices();
+    } else {
+      toast.error("Failed to delete notice.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-6xl mx-auto p-8">
 
+        {/* Header */}
         <div className="flex justify-between items-center mb-8">
 
           <h1 className="text-4xl font-bold text-blue-600">
@@ -52,9 +54,27 @@ const deleteNotice = async (id) => {
 
         </div>
 
+
+        {/* Search */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Search by title..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+
+        {/* Notice Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-          {notices.map((notice) => (
+          {notices
+            .filter((notice) =>
+              notice.title.toLowerCase().includes(search.toLowerCase())
+            )
+            .map((notice) => (
 
             <div
               key={notice.id}
@@ -69,19 +89,23 @@ const deleteNotice = async (id) => {
                 />
               )}
 
+
               <h2 className="text-2xl font-semibold mb-2">
                 {notice.title}
               </h2>
 
+
               <p className="text-gray-600 mb-4">
                 {notice.body}
               </p>
+
 
               <div className="flex justify-between mb-4">
 
                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
                   {notice.category}
                 </span>
+
 
                 <span
                   className={`px-3 py-1 rounded-full text-sm ${
@@ -95,6 +119,7 @@ const deleteNotice = async (id) => {
 
               </div>
 
+
               <div className="flex justify-between">
 
                 <Link href={`/edit/${notice.id}`}>
@@ -102,6 +127,7 @@ const deleteNotice = async (id) => {
                     Edit
                   </button>
                 </Link>
+
 
                 <button
                   onClick={() => deleteNotice(notice.id)}
@@ -111,6 +137,7 @@ const deleteNotice = async (id) => {
                 </button>
 
               </div>
+
 
             </div>
 

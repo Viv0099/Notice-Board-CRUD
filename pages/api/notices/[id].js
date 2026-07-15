@@ -1,4 +1,5 @@
 import { prisma } from "../../../lib/prisma";
+import { verifyToken } from "../../../lib/auth";
 
 export default async function handler(req, res) {
   const { id } = req.query;
@@ -40,7 +41,7 @@ export default async function handler(req, res) {
 
   // UPDATE notice
   if (req.method === "PUT") {
-    try {
+    try { verifyToken(req);
       const {
         title,
         body,
@@ -72,7 +73,15 @@ export default async function handler(req, res) {
 
     } catch (error) {
       console.error("PUT ERROR:", error);
-
+      if (
+          error.message === "No token provided" ||
+          error.message === "Invalid token" ||
+          error.name === "JsonWebTokenError"
+        ) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+      }
       return res.status(500).json({
         message: error.message,
       });
@@ -83,16 +92,27 @@ export default async function handler(req, res) {
   // DELETE notice
   if (req.method === "DELETE") {
     try {
-      const notice = await prisma.notice.delete({
+      const existingNotice = await prisma.notice.findUnique({
         where: {
           id: noticeId,
         },
       });
 
+      if (!existingNotice) {
+        return res.status(404).json({
+          message: "Notice not found",
+        });
+      }
+
+      await prisma.notice.delete({
+        where: {
+          id: noticeId,
+        },
+      });
 
       return res.status(200).json({
         message: "Notice deleted successfully",
-        notice,
+        notice: existingNotice,
       });
 
     } catch (error) {
