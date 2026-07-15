@@ -1,4 +1,5 @@
 import { prisma } from "../../../lib/prisma";
+import { verifyToken } from "../../../lib/auth";
 
 export default async function handler(req, res) {
 
@@ -33,6 +34,7 @@ export default async function handler(req, res) {
   // CREATE notice
   if (req.method === "POST") {
     try {
+      verifyToken(req);
 
       const {
         title,
@@ -73,6 +75,15 @@ export default async function handler(req, res) {
     } catch (error) {
 
       console.error("POST ERROR:", error);
+      if (
+         error.message === "No token provided" || 
+         error.message === "Invalid token" || 
+         error.name === "JsonWebTokenError"
+        ) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+       }
 
       return res.status(500).json({
         message: error.message,
