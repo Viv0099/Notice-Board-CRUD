@@ -22,6 +22,7 @@ enum Category {
   Exam
   Event
   General
+  Holiday
 }
 
 enum Priority {

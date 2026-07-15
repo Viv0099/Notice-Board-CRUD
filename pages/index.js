@@ -5,18 +5,35 @@ import toast from "react-hot-toast";
 export default function Home() {
   const [notices, setNotices] = useState([]);
   const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [priority, setPriority] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
 
   const noticesPerPage = 6;
 
-  // Search Filter
-  const filteredNotices = notices.filter((notice) =>
-    notice.title.toLowerCase().includes(search.toLowerCase())
-  );
+  // Search + Category + Priority Filter
+  const filteredNotices = notices.filter((notice) => {
+    const matchesSearch = notice.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesCategory =
+      category === "All" || notice.category === category;
+
+    const matchesPriority =
+      priority === "All" || notice.priority === priority;
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesPriority
+    );
+  });
 
   // Pagination
   const indexOfLastNotice = currentPage * noticesPerPage;
-  const indexOfFirstNotice = indexOfLastNotice - noticesPerPage;
+  const indexOfFirstNotice =
+    indexOfLastNotice - noticesPerPage;
 
   const currentNotices = filteredNotices.slice(
     indexOfFirstNotice,
@@ -72,8 +89,9 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Search */}
-        <div className="mb-6">
+        {/* Search + Filters */}
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+
           <input
             type="text"
             placeholder="Search by title..."
@@ -82,11 +100,39 @@ export default function Home() {
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 rounded-lg p-3"
           />
-        </div>
 
-        {/* No Notices */}
+          <select
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border border-gray-300 rounded-lg p-3"
+          >
+            <option value="All">All Categories</option>
+            <option value="General">General</option>
+            <option value="Exam">Exam</option>
+            <option value="Event">Event</option>
+            <option value="Holiday">Holiday</option>
+          </select>
+
+          <select
+            value={priority}
+            onChange={(e) => {
+              setPriority(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border border-gray-300 rounded-lg p-3"
+          >
+            <option value="All">All Priorities</option>
+            <option value="Normal">Normal</option>
+            <option value="Urgent">Urgent</option>
+          </select>
+
+        </div>
+                {/* No Notices */}
         {filteredNotices.length === 0 ? (
           <p className="text-center text-gray-500 text-lg">
             No notices found.
@@ -184,6 +230,7 @@ export default function Home() {
             </div>
           </>
         )}
+
       </div>
     </div>
   );
