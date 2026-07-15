@@ -5,6 +5,26 @@ import toast from "react-hot-toast";
 export default function Home() {
   const [notices, setNotices] = useState([]);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const noticesPerPage = 6;
+
+  // Search Filter
+  const filteredNotices = notices.filter((notice) =>
+    notice.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Pagination
+  const indexOfLastNotice = currentPage * noticesPerPage;
+  const indexOfFirstNotice = indexOfLastNotice - noticesPerPage;
+
+  const currentNotices = filteredNotices.slice(
+    indexOfFirstNotice,
+    indexOfLastNotice
+  );
+
+  const totalPages =
+    Math.ceil(filteredNotices.length / noticesPerPage) || 1;
 
   const fetchNotices = async () => {
     const res = await fetch("/api/notices");
@@ -41,7 +61,6 @@ export default function Home() {
 
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-
           <h1 className="text-4xl font-bold text-blue-600">
             Notice Board
           </h1>
@@ -51,9 +70,7 @@ export default function Home() {
               + Add Notice
             </button>
           </Link>
-
         </div>
-
 
         {/* Search */}
         <div className="mb-6">
@@ -61,90 +78,112 @@ export default function Home() {
             type="text"
             placeholder="Search by title..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-
-        {/* Notice Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-          {notices
-            .filter((notice) =>
-              notice.title.toLowerCase().includes(search.toLowerCase())
-            )
-            .map((notice) => (
-
-            <div
-              key={notice.id}
-              className="bg-white rounded-xl shadow-lg p-5"
-            >
-
-              {notice.image && (
-                <img
-                  src={notice.image}
-                  alt={notice.title}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
-              )}
-
-
-              <h2 className="text-2xl font-semibold mb-2">
-                {notice.title}
-              </h2>
-
-
-              <p className="text-gray-600 mb-4">
-                {notice.body}
-              </p>
-
-
-              <div className="flex justify-between mb-4">
-
-                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-                  {notice.category}
-                </span>
-
-
-                <span
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    notice.priority === "Urgent"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-green-100 text-green-700"
-                  }`}
+        {/* No Notices */}
+        {filteredNotices.length === 0 ? (
+          <p className="text-center text-gray-500 text-lg">
+            No notices found.
+          </p>
+        ) : (
+          <>
+            {/* Notice Cards */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentNotices.map((notice) => (
+                <div
+                  key={notice.id}
+                  className="bg-white rounded-xl shadow-lg p-5"
                 >
-                  {notice.priority}
-                </span>
+                  {notice.image && (
+                    <img
+                      src={notice.image}
+                      alt={notice.title}
+                      className="w-full h-48 object-cover rounded-lg mb-4"
+                    />
+                  )}
 
-              </div>
+                  <h2 className="text-2xl font-semibold mb-2">
+                    {notice.title}
+                  </h2>
 
+                  <p className="text-gray-600 mb-4">
+                    {notice.body}
+                  </p>
 
-              <div className="flex justify-between">
+                  <div className="flex justify-between mb-4">
+                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                      {notice.category}
+                    </span>
 
-                <Link href={`/edit/${notice.id}`}>
-                  <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
-                    Edit
-                  </button>
-                </Link>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        notice.priority === "Urgent"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
+                    >
+                      {notice.priority}
+                    </span>
+                  </div>
 
+                  <div className="flex justify-between">
+                    <Link href={`/edit/${notice.id}`}>
+                      <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
+                        Edit
+                      </button>
+                    </Link>
 
-                <button
-                  onClick={() => deleteNotice(notice.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
-                >
-                  Delete
-                </button>
-
-              </div>
-
-
+                    <button
+                      onClick={() => deleteNotice(notice.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
 
-          ))}
+            {/* Pagination */}
+            <div className="flex justify-center items-center gap-2 mt-8">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+                className="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50"
+              >
+                Previous
+              </button>
 
-        </div>
+              {[...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`px-4 py-2 rounded-lg ${
+                    currentPage === index + 1
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
 
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+                className="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
